@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Transform.js Demo</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+		<script src="transform.js"></script>
+		<style>
+			body
+			{
+				font-family: Helvetica, Arial, sans-serif;
+				color: #555;
+				background: #FAFAFA;
+			}
+			h2
+			{
+				margin: 10px;
+			}
+			a
+			{
+				color: #48C;
+				text-decoration: none;
+			}
+			a:hover
+			{
+				text-decoration: underline;
+			}
+			#container > div
+			{
+				margin: 20px 0px;
+				padding: 5px;
+				background: #EEE;
+				border: 1px solid #AAA;
+				box-shadow: 0px 0px 3px #AAA;
+			}
+			.code,.preview
+			{
+				width: 600px;
+				height: 400px;
+				margin: 5px;
+				vertical-align: top;
+				background: white;
+				border: 1px solid #AAA;
+				box-shadow: 0px 0px 3px #AAA;
+				display: inline-block;
+			}
+			.code
+			{
+				overflow: auto;
+			}
+			.preview
+			{
+			}
+			pre
+			{
+				margin: 0px;
+				tab-size: 4;
+			}
+			code.hljs
+			{
+				background: white;
+				overflow: visible;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Transform.js Demo</h1>
+		<p><a href="https://github.com/kendfrey/transform.js">Transform.js</a> can be used with any 2D display system you want. Here are some examples.</p>
+		<div id="container">
+			<div>
+				<h2>DOM</h2>
+				<template>
+					<div id="dom" style="position: relative;">
+						<style>
+							#dom div
+							{
+								position: absolute;
+								width: 10px;
+								height: 10px;
+								transform: translate(-5px, -5px);
+								border-radius: 5px;
+								background: black;
+							}
+						</style>
+					</div>
+					<script>
+						var v = transform.vector;
+						var points =
+						[
+							v(-1,-1,-1),
+							v( 1,-1,-1),
+							v(-1, 1,-1),
+							v( 1, 1,-1),
+							v(-1,-1, 1),
+							v( 1,-1, 1),
+							v(-1, 1, 1),
+							v( 1, 1, 1)
+						];
+						var dom = document.getElementById("dom");
+						var camera =
+							transform.perspectiveCamera(v(2,3,8), v(0,0,0), v(0,1,0), 60, 600, 400);
+						for (var i = 0; i < points.length; i++)
+						{
+							var point = points[i];
+							var position = transform.project(point, camera);
+							var dot = document.createElement("div");
+							dot.style.left = position.x + "px";
+							dot.style.top = position.y + "px";
+							dom.appendChild(dot);
+						}
+					</script>
+				</template>
+				<div class="code"><pre><code class="html"></code></pre></div>
+				<div class="preview">
+				</div>
+			</div>
+			<div>
+				<h2>Canvas</h2>
+				<template>
+					<canvas id="canvas" width="600" height="400"></canvas>
+					<script>
+						var v = transform.vector;
+						var lines =
+						[
+							[v(-1,-1,-1), v( 1,-1,-1)],
+							[v(-1, 1,-1), v( 1, 1,-1)],
+							[v(-1,-1, 1), v( 1,-1, 1)],
+							[v(-1, 1, 1), v( 1, 1, 1)],
+							[v(-1,-1,-1), v(-1, 1,-1)],
+							[v( 1,-1,-1), v( 1, 1,-1)],
+							[v(-1,-1, 1), v(-1, 1, 1)],
+							[v( 1,-1, 1), v( 1, 1, 1)],
+							[v(-1,-1,-1), v(-1,-1, 1)],
+							[v( 1,-1,-1), v( 1,-1, 1)],
+							[v(-1, 1,-1), v(-1, 1, 1)],
+							[v( 1, 1,-1), v( 1, 1, 1)]
+						];
+						var ctx = document.getElementById("canvas")
+							.getContext("2d");
+						var camera =
+							transform.perspectiveCamera(v(2,3,8), v(0,0,0), v(0,1,0), 60, 600, 400);
+						ctx.beginPath();
+						for (var i = 0; i < lines.length; i++)
+						{
+							var line = lines[i];
+							var start = transform.project(line[0], camera);
+							var end = transform.project(line[1], camera);
+							ctx.moveTo(start.x, start.y);
+							ctx.lineTo(end.x, end.y);
+						}
+						ctx.stroke();
+					</script>
+				</template>
+				<div class="code"><pre><code class="html"></code></pre></div>
+				<div class="preview">
+				</div>
+			</div>
+			<div>
+				<h2>SVG</h2>
+				<template>
+					<svg id="svg" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 600 400">
+						<style>
+							line
+							{
+								stroke: black;
+							}
+						</style>
+					</svg>
+					<script>
+						var v = transform.vector;
+						var lines =
+						[
+							[v(-1,-1,-1), v( 1,-1,-1)],
+							[v(-1, 1,-1), v( 1, 1,-1)],
+							[v(-1,-1, 1), v( 1,-1, 1)],
+							[v(-1, 1, 1), v( 1, 1, 1)],
+							[v(-1,-1,-1), v(-1, 1,-1)],
+							[v( 1,-1,-1), v( 1, 1,-1)],
+							[v(-1,-1, 1), v(-1, 1, 1)],
+							[v( 1,-1, 1), v( 1, 1, 1)],
+							[v(-1,-1,-1), v(-1,-1, 1)],
+							[v( 1,-1,-1), v( 1,-1, 1)],
+							[v(-1, 1,-1), v(-1, 1, 1)],
+							[v( 1, 1,-1), v( 1, 1, 1)]
+						];
+						var svg = document.getElementById("svg");
+						var camera =
+							transform.perspectiveCamera(v(2,3,8), v(0,0,0), v(0,1,0), 60, 600, 400);
+						for (var i = 0; i < lines.length; i++)
+						{
+							var line = lines[i];
+							var start = transform.project(line[0], camera);
+							var end = transform.project(line[1], camera);
+							var svgLine =
+								document.createElementNS("http://www.w3.org/2000/svg", "line");
+							svgLine.setAttribute("x1", start.x);
+							svgLine.setAttribute("y1", start.y);
+							svgLine.setAttribute("x2", end.x);
+							svgLine.setAttribute("y2", end.y);
+							svg.appendChild(svgLine);
+						}
+					</script>
+				</template>
+				<div class="code"><pre><code class="html"></code></pre></div>
+				<div class="preview"></div>
+			</div>
+		</div>
+		<script>
+			var demos = document.querySelectorAll("#container > div");
+			for (var i = 0; i < demos.length; i++)
+			{
+				var demo = demos[i];
+				var code = demo.querySelector("template").innerHTML;
+				demo.querySelector(".code code").textContent = unindent(code);
+				demo.querySelector(".preview").innerHTML = code;
+				var scripts = demo.querySelectorAll(".preview script");
+				for (var j = 0; j < scripts.length; j++)
+				{
+					new Function(scripts[j].innerHTML)();
+				}
+			}
+			
+			function unindent(code)
+			{
+				var indent = code.match(/([\r\n]+)\s+/);
+				if (indent === null)
+				{
+					return code;
+				}
+				return code.replace(new RegExp(indent[0], "g"), indent[1]).replace(/^[\r\n]+/, "");
+			}
+		</script>
+		<p>Are the examples appearing incorrectly? Try a different browser. This demo page is not compatible with Internet Explorer.</p>
+	</body>
+</html>
